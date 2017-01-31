@@ -5,20 +5,22 @@ import 'rxjs/add/operator/map';
 
 @Injectable()
 export class MediaService {
-  private url: string ='http://media.mw.metropolia.fi/wbma';
+  private url: string = 'http://media.mw.metropolia.fi/wbma';
   private user: any = {
   };
+
   constructor(private http: Http, private router: Router) { }
   setUser = (user) => {
     this.user = user;
     console.log(this.user);
   }
- 
+
+
 
   login = () => {
     // this.http.post(this.url, this.user)
-    return this.http.post(this.url+'/login', this.user)
-    .subscribe(
+    return this.http.post(this.url + '/login', this.user)
+      .subscribe(
       resp => {
         console.log(resp.json());
         const dataFromServer = resp.json();
@@ -33,24 +35,48 @@ export class MediaService {
       error => {
         console.log(error);
       }
-    );
+      );
   }
 
-/*
-login(username: string, password: string) {
-    const url: string = 'http://media.mw.metropolia.fi/wbma/login';
-    const headers = new Headers({ 'Content-Type': 'application/json' });
-    const options = new RequestOptions({ headers: headers });
-    let data = `{
-        "username": "${username}",
-        "password": "${password}"
-        }`;
-        console.log(data);
-    return this.http.post(url, data, options).map
-      (resp => resp.json());
+  register = () => {
+
+    return this.http.post(this.url + '/users', this.user)
+      .subscribe(
+      resi => {
+        console.log(resi.json());
+        const originalUser = this.user;
+        const dataFromServer = resi.json();
+
+        this.user = dataFromServer;
+        // convert user object to string and save userdata to local storage
+        delete originalUser["email"];
+        this.setUser(originalUser);
+        this.login();
+
+      },
+      error => {
+        console.log(error);
+      }
+      );
+
 
   }
-*/
+
+  /*
+  login(username: string, password: string) {
+      const url: string = 'http://media.mw.metropolia.fi/wbma/login';
+      const headers = new Headers({ 'Content-Type': 'application/json' });
+      const options = new RequestOptions({ headers: headers });
+      let data = `{
+          "username": "${username}",
+          "password": "${password}"
+          }`;
+          console.log(data);
+      return this.http.post(url, data, options).map
+        (resp => resp.json());
   
+    }
+  */
+
 
 }
